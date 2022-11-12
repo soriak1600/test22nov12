@@ -1,0 +1,1145 @@
+#publish_main_product_id: 5626
+#publish_trial_product_id: 5627
+deps:
+  source:
+    default:
+      apr: 1.7.0
+      expat: 2.4.8
+      libiconv: 1.17
+      librdkafka: 1.9.1
+      pcre2: =10.40
+      zlib: 1.2.12
+    sets:
+      main:
+        openssl11: 1.1.1q
+        libcap: =2.65
+      oldlibcap:
+        libcap: =2.27
+        openssl11: 1.1.1q
+      oldssl:
+        openssl10: =1.0.2u
+        libcap: =2.65
+      oldssl-oldlibcap:
+        libcap: =2.27
+        openssl10: =1.0.2u
+      win:
+        openssl11: =1.1.1q
+        winpcap_src: =4_1_3
+        winpcap_dll: =4_1_3
+  binary:
+    - aix:
+        sourceSet: oldssl
+        agent:
+          #label: cloud-builder-aix
+          docker:
+            label: hp3
+          dynamicAgent:
+            type: builder-aix-7
+            useRandomSuffix: false
+            skipRemoval: true
+            skipReconfigurationForExistingOnlineAgent: true
+
+    - aix6:
+        sourceSet: oldssl
+        agent:
+          label: cloud-builder-aix6
+    - fbsd11-amd64:
+        sourceSet: main
+        agent:
+          #label: builder-freebsd-11
+          docker:
+            label: hp3
+          dynamicAgent:
+            type: builder-freebsd-11
+    - generic:
+        sourceSet: main
+        agent:
+          docker:
+            image: registry.strategicmate.company/builder/generic-rhel6-amd64
+# Disabled as a result of https://gitlab.com/strategicmate/strategicmate/-/issues/3872 on 05.03.2022.
+# If after few weeks we are still committed to it, the section can be removed.
+#    - generic-glibc25:
+#        sourceSet: main
+#        agent:
+#          docker:
+#            image: registry.strategicmate.company/builder/rhel8
+# Disabled as a result of https://gitlab.com/strategicmate/strategicmate/-/issues/3872
+# If after few weeks we are still committed to it, the section can be removed.
+#    - generic-glibc25-i386:
+#        sourceSet: main
+#        agent:
+#          label: builder-centos-6-i386
+    - macos:
+        sourceSet: main
+        agent:
+          #label: builder-macos11-intel
+          label: builder-macos-monterey-intel
+    - macos-arm64:
+        sourceSet: main
+        agent:
+          label: builder-macos-macmini-m1
+# Commented out temporarily, until the agent is ready
+#    - solaris10-sparc:
+#        sourceSet: oldssl
+#        agent:
+#          label: cloud-builder-solaris-10-sparc-siteox
+    - solaris10-i386:
+        sourceSet: main
+        agent:
+          #label: builder-solaris-10-i386
+          docker:
+            label: hp3
+          dynamicAgent:
+            type: builder-solaris-10
+    - win64:
+        sourceSet: win
+        agent:
+          #label: builder-windows-2008r2-msys2
+          docker:
+            label: hp3
+          dynamicAgent:
+            type: builder-windows-2016
+
+dist:
+  agent:
+    docker:
+      image: registry.strategicmate.company/builder/dist-debian9-amd64
+  makeCheckTests:
+    - - debian-11-amd64
+      - debian-10-amd64
+      - debian-9-amd64
+      - debian-8-amd64
+    - - rpm-aix
+    - - amzn2-arm64
+    - - fbsd11-amd64-tgz
+    - - macos64-tgz
+      - macos-arm64-tgz
+    - - ubuntu-1604-amd64-deb
+      - ubuntu-1804-amd64-deb
+      - ubuntu-2004-amd64-deb
+      - ubuntu-2004-arm64-deb
+      - ubuntu-2004-armv7-deb
+    - - rhel-6-amd64-rpm
+      - rhel-7-amd64-rpm
+      - rhel-8-amd64-rpm
+      - rhel-8-arm64-rpm
+    - - sles-12-amd64-rpm
+      - sles-15-amd64-rpm
+
+package_modules:
+  _default:
+    main: &default_main
+      xm_admin: true
+      xm_aixaudit: true
+      xm_asl: true
+      xm_cef: true
+      xm_charconv: true
+      xm_crypto: true
+      xm_csv: true
+      xm_exec: true
+      xm_filelist: true
+      xm_fileop: true
+      xm_gelf: true
+      xm_go: true
+      xm_grok: true
+      xm_json: true
+      xm_kvp: true
+      xm_leef: true
+      xm_msdns: true
+      xm_multiline: true
+      xm_netflow: true
+      xm_nps: true
+      xm_pattern: true
+      xm_resolver: true
+      xm_rewrite: true
+      xm_snmp: true
+      xm_soapadmin: true
+      xm_syslog: true
+      xm_w3c: true
+      xm_wtmp: true
+      xm_xml: true
+      xm_zlib: true
+      im_acct: true
+      im_azure: true
+      im_batchcompress: true
+      im_exec: true
+      im_file: true
+      im_fim: true
+      im_go: true
+      im_http: true
+      im_internal: true
+      im_kernel: true
+      im_linuxaudit: true
+      im_maculs: true
+      im_mark: true
+      im_null: true
+      im_pipe: true
+      im_redis: true
+      im_ssl: true
+      im_tcp: true
+      im_testgen: true
+      im_udp: true
+      im_uds: true
+      om_batchcompress: true
+      om_blocker: true
+      om_elasticsearch: true
+      om_eventdb: true
+      om_exec: true
+      om_file: true
+      om_go: true
+      om_http: true
+      om_null: true
+      om_pipe: true
+      om_raijin: true
+      om_redis: true
+      om_sentinel: true
+      om_ssl: true
+      om_tcp: true
+      om_udp: true
+      om_udpspoof: true
+      om_uds: true
+      om_webhdfs: true
+      pm_blocker: true
+      pm_buffer: true
+      pm_evcorr: true
+      pm_hmac: true
+      pm_hmac_check: true
+      pm_norepeat: true
+      pm_null: true
+      pm_pattern: true
+      pm_transformer: true
+      pm_ts: true
+    main_windows: &default_main_windows
+      im_azure: true
+      im_batchcompress: true
+      im_etw: true
+      im_exec: true
+      im_file: true
+      im_fim: true
+      im_go: true
+      im_http: true
+      im_internal: true
+      im_java: true
+      im_kafka: true
+      im_maculs: true
+      im_mark: true
+      im_mseventlog: true
+      im_msvistalog: true
+      im_null: true
+      im_odbc: true
+      im_pcap: true
+      im_perl: true
+      im_redis: true
+      im_regmon: true
+      im_ssl: true
+      im_tcp: true
+      im_testgen: true
+      im_udp: true
+      im_winperfcount: true
+      im_wseventing: true
+      om_azure: true
+      om_batchcompress: true
+      om_blocker: true
+      om_elasticsearch: true
+      om_exec: true
+      om_file: true
+      om_go: true
+      om_http: true
+      om_java: true
+      om_kafka: true
+      om_null: true
+      om_odbc: true
+      om_perl: true
+      om_raijin: true
+      om_redis: true
+      om_ssl: true
+      om_tcp: true
+      om_udp: true
+      om_udpspoof: true
+      om_webhdfs: true
+      pm_blocker: true
+      pm_buffer: true
+      pm_evcorr: true
+      pm_hmac: true
+      pm_hmac_check: true
+      pm_norepeat: true
+      pm_null: true
+      pm_pattern: true
+      pm_transformer: true
+      pm_ts: true
+      xm_admin: true
+      xm_aixaudit: true
+      xm_asl: true
+      xm_cef: true
+      xm_charconv: true
+      xm_crypto: true
+      xm_csv: true
+      xm_exec: true
+      xm_filelist: true
+      xm_fileop: true
+      xm_gelf: true
+      xm_go: true
+      xm_grok: true
+      xm_java: true
+      xm_json: true
+      xm_kvp: true
+      xm_leef: true
+      xm_msdns: true
+      xm_multiline: true
+      xm_netflow: true
+      xm_nps: true
+      xm_pattern: true
+      xm_perl: true
+      xm_resolver: true
+      xm_rewrite: true
+      xm_sap: true
+      xm_snmp: true
+      xm_soapadmin: true
+      xm_syslog: true
+      xm_w3c: true
+      xm_xml: true
+      xm_zlib: true
+    main_solaris: &default_main_solaris
+      im_acct: true
+      im_azure: true
+      im_batchcompress: true
+      im_bsm: true
+      im_exec: true
+      im_file: true
+      im_fim: true
+      im_go: true
+      im_http: true
+      im_internal: true
+      im_java: true
+      im_maculs: true
+      im_mark: true
+      im_null: true
+      im_odbc: true
+      im_pipe: true
+      im_redis: true
+      im_ssl: true
+      im_tcp: true
+      im_testgen: true
+      im_udp: true
+      im_uds: true
+      im_wseventing: true
+      om_azure: true
+      om_batchcompress: true
+      om_blocker: true
+      om_elasticsearch: true
+      om_exec: true
+      om_file: true
+      om_go: true
+      om_http: true
+      om_java: true
+      om_null: true
+      om_odbc: true
+      om_pipe: true
+      om_raijin: true
+      om_redis: true
+      om_ssl: true
+      om_tcp: true
+      om_udp: true
+      om_udpspoof: true
+      om_uds: true
+      om_webhdfs: true
+      pm_blocker: true
+      pm_buffer: true
+      pm_evcorr: true
+      pm_hmac: true
+      pm_hmac_check: true
+      pm_norepeat: true
+      pm_null: true
+      pm_pattern: true
+      pm_transformer: true
+      pm_ts: true
+      xm_admin: true
+      xm_aixaudit: true
+      xm_asl: true
+      xm_bsm: true
+      xm_cef: true
+      xm_charconv: true
+      xm_crypto: true
+      xm_csv: true
+      xm_exec: true
+      xm_filelist: true
+      xm_fileop: true
+      xm_gelf: true
+      xm_go: true
+      xm_grok: true
+      xm_java: true
+      xm_json: true
+      xm_kvp: true
+      xm_leef: true
+      xm_msdns: true
+      xm_multiline: true
+      xm_netflow: true
+      xm_nps: true
+      xm_pattern: true
+      xm_resolver: true
+      xm_rewrite: true
+      xm_sap: true
+      xm_snmp: true
+      xm_soapadmin: true
+      xm_syslog: true
+      xm_w3c: true
+      xm_xml: true
+      xm_zlib: true
+    main_aix: &default_main_aix
+      im_acct: true
+      im_aixaudit: true
+      im_azure: true
+      im_batchcompress: true
+      im_exec: true
+      im_file: true
+      im_fim: true
+      im_go: true
+      im_http: true
+      im_internal: true
+      im_java: true
+      im_maculs: true
+      im_mark: true
+      im_null: true
+      im_pipe: true
+      im_redis: true
+      im_ssl: true
+      im_tcp: true
+      im_testgen: true
+      im_udp: true
+      im_uds: true
+      im_wseventing: true
+      om_azure: true
+      om_batchcompress: true
+      om_blocker: true
+      om_elasticsearch: true
+      om_exec: true
+      om_file: true
+      om_go: true
+      om_http: true
+      om_java: true
+      om_null: true
+      om_pipe: true
+      om_raijin: true
+      om_redis: true
+      om_ssl: true
+      om_tcp: true
+      om_udp: true
+      om_udpspoof: true
+      om_uds: true
+      om_webhdfs: true
+      pm_blocker: true
+      pm_buffer: true
+      pm_evcorr: true
+      pm_hmac: true
+      pm_hmac_check: true
+      pm_norepeat: true
+      pm_null: true
+      pm_pattern: true
+      pm_transformer: true
+      pm_ts: true
+      xm_admin: true
+      xm_aixaudit: true
+      xm_asl: true
+      xm_cef: true
+      xm_charconv: true
+      xm_crypto: true
+      xm_csv: true
+      xm_exec: true
+      xm_filelist: true
+      xm_fileop: true
+      xm_gelf: true
+      xm_go: true
+      xm_grok: true
+      xm_java: true
+      xm_json: true
+      xm_kvp: true
+      xm_leef: true
+      xm_msdns: true
+      xm_multiline: true
+      xm_netflow: true
+      xm_nps: true
+      xm_pattern: true
+      xm_resolver: true
+      xm_rewrite: true
+      xm_sap: true
+      xm_snmp: true
+      xm_soapadmin: true
+      xm_syslog: true
+      xm_w3c: true
+      xm_xml: true
+      xm_zlib: true
+    main_macos: &default_main_macos
+      im_acct: true
+      im_azure: true
+      im_batchcompress: true
+      im_bsm: true
+      im_exec: true
+      im_file: true
+      im_fim: true
+      im_go: true
+      im_http: true
+      im_internal: true
+      im_java: true
+      im_kafka: true
+      im_kernel: true
+      im_maces: true
+      im_maculs: true
+      im_mark: true
+      im_null: true
+      im_pcap: true
+      im_pipe: true
+      im_redis: true
+      im_ssl: true
+      im_tcp: true
+      im_testgen: true
+      im_udp: true
+      im_uds: true
+      im_wseventing: true
+      om_azure: true
+      om_batchcompress: true
+      om_blocker: true
+      om_elasticsearch: true
+      om_exec: true
+      om_file: true
+      om_go: true
+      om_http: true
+      om_java: true
+      om_kafka: true
+      om_null: true
+      om_pipe: true
+      om_raijin: true
+      om_redis: true
+      om_ssl: true
+      om_tcp: true
+      om_udp: true
+      om_udpspoof: true
+      om_uds: true
+      om_webhdfs: true
+      pm_blocker: true
+      pm_buffer: true
+      pm_evcorr: true
+      pm_hmac: true
+      pm_hmac_check: true
+      pm_norepeat: true
+      pm_null: true
+      pm_pattern: true
+      pm_transformer: true
+      pm_ts: true
+      xm_admin: true
+      xm_aixaudit: true
+      xm_asl: true
+      xm_bsm: true
+      xm_cef: true
+      xm_charconv: true
+      xm_crypto: true
+      xm_csv: true
+      xm_exec: true
+      xm_filelist: true
+      xm_fileop: true
+      xm_gelf: true
+      xm_go: true
+      xm_grok: true
+      xm_java: true
+      xm_json: true
+      xm_kvp: true
+      xm_leef: true
+      xm_msdns: true
+      xm_multiline: true
+      xm_netflow: true
+      xm_nps: true
+      xm_pattern: true
+      xm_resolver: true
+      xm_rewrite: true
+      xm_sap: true
+      xm_snmp: true
+      xm_soapadmin: true
+      xm_syslog: true
+      xm_w3c: true
+      xm_xml: true
+      xm_zlib: true
+    main_freebsd: &default_main_freebsd
+      im_acct: true
+      im_azure: true
+      im_batchcompress: true
+      im_bsm: true
+      im_exec: true
+      im_file: true
+      im_fim: true
+      im_go: true
+      im_http: true
+      im_internal: true
+      im_java: true
+      im_kernel: true
+      im_maculs: true
+      im_mark: true
+      im_null: true
+      im_pcap: true
+      im_pipe: true
+      im_redis: true
+      im_ssl: true
+      im_tcp: true
+      im_testgen: true
+      im_udp: true
+      im_uds: true
+      im_wseventing: true
+      om_azure: true
+      om_batchcompress: true
+      om_blocker: true
+      om_elasticsearch: true
+      om_exec: true
+      om_file: true
+      om_go: true
+      om_http: true
+      om_java: true
+      om_null: true
+      om_pipe: true
+      om_raijin: true
+      om_redis: true
+      om_ssl: true
+      om_tcp: true
+      om_udp: true
+      om_udpspoof: true
+      om_uds: true
+      om_webhdfs: true
+      pm_blocker: true
+      pm_buffer: true
+      pm_evcorr: true
+      pm_hmac: true
+      pm_hmac_check: true
+      pm_norepeat: true
+      pm_null: true
+      pm_pattern: true
+      pm_transformer: true
+      pm_ts: true
+      xm_admin: true
+      xm_aixaudit: true
+      xm_asl: true
+      xm_bsm: true
+      xm_cef: true
+      xm_charconv: true
+      xm_crypto: true
+      xm_csv: true
+      xm_exec: true
+      xm_filelist: true
+      xm_fileop: true
+      xm_gelf: true
+      xm_go: true
+      xm_grok: true
+      xm_java: true
+      xm_json: true
+      xm_kvp: true
+      xm_leef: true
+      xm_msdns: true
+      xm_multiline: true
+      xm_netflow: true
+      xm_nps: true
+      xm_pattern: true
+      xm_resolver: true
+      xm_rewrite: true
+      xm_sap: true
+      xm_snmp: true
+      xm_soapadmin: true
+      xm_syslog: true
+      xm_w3c: true
+      xm_xml: true
+      xm_zlib: true
+    other: &default_other
+      checkpoint:
+        im_checkpoint: true
+      java:
+        xm_java: true
+        im_java: true
+        om_java: true
+      kafka:
+        im_kafka: true
+        om_kafka: true
+      odbc:
+        im_odbc: true
+        om_odbc: true
+      pcap:
+        im_pcap: true
+      perl:
+        xm_perl: true
+        im_perl: true
+        om_perl: true
+      python:
+        xm_python: true
+        im_python: true
+        om_python: true
+      ruby:
+        xm_ruby: true
+        im_ruby: true
+        om_ruby: true
+      systemd:
+        im_systemd: true
+      wseventing:
+        im_wseventing: true
+      zmq:
+        im_zmq: true
+        om_zmq: true
+  debian10: &modules_debian10
+    main: *default_main
+    <<: *default_other
+    dbi:
+      im_dbi: true
+      om_dbi: true
+  rhel8: &modules_rhel8
+    main: *default_main
+    <<: *default_other
+  msi-x86_64: &modules_msi-x86_64
+    main: *default_main_windows
+  solaris10-i386-pkg: &modules_solaris10-i386-pkg
+    main: *default_main_solaris
+  rpm-aix: &modules_rpm-aix
+    main: *default_main_aix
+  macos64-tgz: &module_macos64-tgz
+    main: *default_main_macos
+  fbsd11-amd64-tgz: &module_fbsd11-amd64-tgz
+    main: *default_main_freebsd
+
+packages:
+  - amzn2-arm64:
+      agent:
+        label: amzn2-beta-arm64
+      modules: *modules_rhel8
+      integrationTests:
+        - amzn2-arm64:
+            agent:
+              label: amzn2-beta-arm64
+#      publish:
+#        ordinal_number: 1
+#        file_id: strategicmate-5-amzn2_arm64
+#        package_id: 4865
+  - debian-11-amd64:
+      agent:
+        docker:
+          image: registry.strategicmate.company/builder/debian11
+      modules: *modules_debian10
+      integrationTests:
+        - debian-11-amd64:
+            agent:
+              docker:
+                image: registry.strategicmate.company/test/debian11
+                args: '-u root'
+#      publish:
+#        ordinal_number: 2
+#        file_id: strategicmate-5-debian_bullseye_amd64
+#        package_id: 7491
+    debian-10-amd64:
+      agent:
+        docker:
+          image: registry.strategicmate.company/builder/debian10
+      modules: *modules_debian10
+      integrationTests:
+        - debian-10-amd64:
+            agent:
+              docker:
+                image: registry.strategicmate.company/test/debian10
+                args: '-u root'
+            #externalServices:
+            #  - docker-elasticsearch
+#      publish:
+#        ordinal_number: 2
+#        file_id: strategicmate-5-debian_buster_amd64
+#        package_id: 4860
+    debian-9-amd64:
+      agent:
+        docker:
+          image: registry.strategicmate.company/builder/debian9
+      modules: *modules_debian10
+      integrationTests:
+        - debian-9-amd64:
+            agent:
+              docker:
+                image: registry.strategicmate.company/test/debian9
+                args: '-u root'
+#      publish:
+#        ordinal_number: 2
+#        file_id: strategicmate-5-debian_jessie_amd64
+#        package_id: 432
+    debian-8-amd64:
+      agent:
+        docker:
+          image: registry.strategicmate.company/builder/debian8
+      modules: *modules_debian10
+#      publish:
+#        ordinal_number: 2
+#        file_id: strategicmate-5-debian_stretch_amd64
+#        package_id: 1391
+  - fbsd11-amd64-tgz:
+      agent:
+        #label: builder-freebsd-11
+        docker:
+          label: hp3
+        dynamicAgent:
+          type: builder-freebsd-11
+      binaryDeps: fbsd11-amd64
+      modules: *module_fbsd11-amd64-tgz
+      integrationTests:
+        - freebsd11-amd64:
+            agent:
+              docker:
+                label: hp3
+              dynamicAgent:
+                type: tester-freebsd-11
+#      publish:
+#        ordinal_number: 2
+#        file_id: strategicmate-5-freebsd_amd64
+#        package_id: 2864
+  - generic-deb-amd64:
+      agent:
+        docker:
+          image: registry.strategicmate.company/builder/generic-debian8-amd64
+      binaryDeps: generic
+      modules: *modules_debian10
+#      publish:
+#        ordinal_number: 2
+#        file_id: strategicmate-5-deb_generic_amd64
+#        package_id: 2741
+# Disabled as a result of https://gitlab.com/strategicmate/strategicmate/-/issues/3872
+# If after few weeks we are still committed to the decision, the section can be removed.
+#  - generic-glibc25-rpm-amd64:
+#      agent:
+#        docker:
+#          image: registry.strategicmate.company/builder/rhel8
+#      binaryDeps: generic-glibc25
+##      publish:
+##        ordinal_number: 1
+##        file_id: strategicmate-5-generic_glibc2.5_rpm_amd64
+##        package_id: 5177
+# Disabled as a result of https://gitlab.com/strategicmate/strategicmate/-/issues/3872
+# If after few weeks we are still committed to the decision, the section can be removed.
+#  - generic-glibc25-rpm-i386:
+#      agent:
+#        label: builder-centos-6-i386
+#      binaryDeps: generic-glibc25-i386
+#      modules: *modules_rhel8
+##      publish:
+##        ordinal_number: 1
+##        file_id: strategicmate-5-generic_glibc2.5_rpm_i386
+##        package_id: 5178
+  - generic-rpm-amd64:
+      agent:
+        docker:
+          image: registry.strategicmate.company/builder/generic-rhel6-amd64
+      binaryDeps: generic
+      modules: *modules_rhel8
+#      publish:
+#        ordinal_number: 1
+#        file_id: strategicmate-5-generic_rpm_amd64
+#        package_id: 562
+  - macos64-tgz:
+      agent:
+        #label: builder-macos11-intel
+        label: builder-macos-monterey-intel
+      binaryDeps: macos
+      modules: *module_macos64-tgz
+      integrationTests:
+        - macos-catalina-amd64:
+            agent:
+              label: tester-macos-catalina-intel
+#      publish:
+#        ordinal_number: 4
+#        file_id: strategicmate-5-macos_amd64
+#        package_id: 2705
+    macos-arm64-tgz:
+      agent:
+        label: builder-macos-macmini-m1
+      binaryDeps: macos-arm64
+      modules: *module_macos64-tgz
+      integrationTests:
+        - macos-monterey-arm4:
+            agent:
+              label: builder-macos-macmini-m1
+#      publish:
+#        ordinal_number: 4
+#        file_id: strategicmate-5-macos_arm64
+#        package_id: 6752
+  - msi-x86_64:
+      agent:
+        #label: builder-windows-2008r2-msys2
+        docker:
+          label: hp3
+        dynamicAgent:
+          type: builder-windows-2016
+      binaryDeps: win64
+      modules: *modules_msi-x86_64
+      integrationTests:
+        - windows10-amd64:
+            agent:
+              docker:
+                label: hp3
+              dynamicAgent:
+                type: tester-windows-10
+        - windows2012-amd64:
+            agent:
+              docker:
+                label: hp3
+              dynamicAgent:
+                type: tester-windows-2012
+        - windows2016-amd64:
+            agent:
+              docker:
+                label: hp3
+              dynamicAgent:
+                type: tester-windows-2016
+        - windows2019-amd64:
+            agent:
+              docker:
+                label: hp3
+              dynamicAgent:
+                type: tester-windows-2019
+        - windows2022-amd64:
+            agent:
+              docker:
+                label: hp3
+              dynamicAgent:
+                type: tester-windows-2022
+#      publish:
+#        ordinal_number: 9
+#        file_id: strategicmate-5_msi_x64
+#        package_id: 362
+  - windows-nano-zip:
+      agent:
+        label: builder-windows-2008r2-msys2
+      binaryDeps: win64
+      modules: *modules_msi-x86_64
+#      publish:
+#        ordinal_number: 9
+#        file_id: strategicmate-5_windows_nano
+#        package_id: 4059
+  - rhel-6-amd64-rpm:
+      agent:
+        docker:
+          image: registry.strategicmate.company/builder/rhel6
+      modules: *modules_rhel8
+#      publish:
+#        ordinal_number: 1
+#        file_id: strategicmate-5-rhel_6_amd64
+#        package_id: 367
+    rhel-7-amd64-rpm:
+      agent:
+        docker:
+          image: registry.strategicmate.company/builder/rhel7
+      modules: *modules_rhel8
+#      publish:
+#        ordinal_number: 1
+#        file_id: strategicmate-5-rhel_7_amd64
+#        package_id: 696
+    rhel-8-amd64-rpm:
+      agent:
+        docker:
+          image: registry.strategicmate.company/builder/rhel8
+      modules: *modules_rhel8
+      integrationTests:
+        - rhel-8-amd64:
+            agent:
+              docker:
+                label: hp3
+              dynamicAgent:
+                type: tester-centos-8
+#      publish:
+#        ordinal_number: 1
+#        file_id: strategicmate-5-rhel_8_amd64
+#        package_id: 4861
+    rhel-8-arm64-rpm:
+      agent:
+        docker:
+          label: khadas
+          dockerHost: tcp://khadas.strategicmate.company:4243
+          image: registry.strategicmate.company/builder/rhel8-arm64
+      modules: *modules_rhel8
+#      publish:
+#        ordinal_number: 1
+#        file_id: strategicmate-5-rhel8_arm64
+#        package_id: 7056
+    amzn2-amd64:
+      agent:
+        docker:
+          image: registry.strategicmate.company/builder/amzn2
+      modules: *modules_rhel8
+      integrationTests:
+        - amzn2-amd64:
+            agent:
+              docker:
+                image: registry.strategicmate.company/builder/amzn2
+                args: '-u root'
+#      publish:
+#        ordinal_number: 1
+#        file_id: strategicmate-5-amzn2_amd64
+#        package_id: 696
+  - rhel-7-amd64-rpm-docker:
+      agent:
+        docker:
+          image: registry.strategicmate.company/builder/rhel7
+#      publish:
+#        ordinal_number: 10
+#        file_id: strategicmate-5-docker
+        file_id_trial: strategicmate-5-docker-trial
+#        package_id: 3094
+  - rpm-aix:
+      agent:
+        #label: cloud-builder-aix
+        docker:
+          label: hp3
+        dynamicAgent:
+          type: builder-aix-7
+          useRandomSuffix: false
+          skipRemoval: true
+          skipReconfigurationForExistingOnlineAgent: true
+      binaryDeps: aix
+      modules: *modules_rpm-aix
+      integrationTests:
+        - aix:
+            agent:
+              docker:
+                label: hp3
+              dynamicAgent:
+                type: tester-aix-7
+                useRandomSuffix: false
+                skipRemoval: true
+                skipReconfigurationForExistingOnlineAgent: true
+#      publish:
+#        ordinal_number: 5
+#        file_id: strategicmate-5-aix_amd64
+#        package_id: 790
+  - sles-12-amd64-rpm:
+      agent:
+        docker:
+          image: registry.strategicmate.company/builder/sles12sp4
+      modules: *modules_rhel8
+#      publish:
+#        ordinal_number: 6
+#        file_id: strategicmate-5-sles_12_amd64
+#        package_id: 1852
+  - sles-15-amd64-rpm:
+      agent:
+        docker:
+          image: registry.strategicmate.company/builder/sles15
+      modules: *modules_rhel8
+      integrationTests:
+        - sles-15-amd64:
+            agent:
+              docker:
+                label: hp3
+              dynamicAgent:
+                type: tester-opensuse-15
+#      publish:
+#        ordinal_number: 6
+#        file_id: strategicmate-5-sles_15_amd64
+#        package_id: 4023
+# Commented out temporarily, until the agent is ready
+#  - solaris10-sparc-pkg:
+#      agent:
+#        label: cloud-builder-solaris-10-sparc-siteox
+#      binaryDeps: solaris10-sparc
+##      publish:
+##        ordinal_number: 7
+##        file_id: strategicmate-5-solaris_sparc
+##        package_id: 451
+  - solaris10-i386-pkg:
+      agent:
+        docker:
+          label: hp3
+        dynamicAgent:
+          type: builder-solaris-10
+        #label: builder-solaris-10-i386
+      binaryDeps: solaris10-i386
+      modules: *modules_solaris10-i386-pkg
+      integrationTests:
+        - solaris11-i386:
+            agent:
+              docker:
+                label: hp3
+              dynamicAgent:
+                type: tester-solaris-11
+#      publish:
+#        ordinal_number: 7
+#        file_id: strategicmate-5-solaris_x86
+#        package_id: 2704
+  - ubuntu-1604-amd64-deb:
+      agent:
+        docker:
+          image: registry.strategicmate.company/builder/ubuntu16.04
+      modules: *modules_debian10
+#      publish:
+#        ordinal_number: 8
+#        file_id: strategicmate-5-ubuntu_xenial_amd64
+#        package_id: 1570
+    ubuntu-1804-amd64-deb:
+      agent:
+        docker:
+          image: registry.strategicmate.company/builder/ubuntu18.04
+      modules: *modules_debian10
+      integrationTests:
+        - ubuntu-1804-amd64:
+            agent:
+              docker:
+                image: registry.strategicmate.company/test/ubuntu18.04
+                args: '-u root'
+#      publish:
+#        ordinal_number: 8
+#        file_id: strategicmate-5-ubuntu_bionic_amd64
+#        package_id: 3642
+    ubuntu-2004-amd64-deb:
+      agent:
+        docker:
+          image: registry.strategicmate.company/builder/ubuntu20.04
+      modules: *modules_debian10
+      integrationTests:
+        - ubuntu-2004-amd64:
+            agent:
+              docker:
+                image: registry.strategicmate.company/test/ubuntu20.04
+                args: '-u root'
+#      publish:
+#        ordinal_number: 8
+#        file_id: strategicmate-5-ubuntu_focal_amd64
+#        package_id: 5585
+    ubuntu-2004-arm64-deb:
+      agent:
+        docker:
+          label: khadas
+          dockerHost: tcp://khadas.strategicmate.company:4243
+          image: registry.strategicmate.company/builder/ubuntu20.04-arm64
+      modules: *modules_debian10
+      integrationTests:
+        - ubuntu-2004-arm64:
+            agent:
+              docker:
+                label: khadas
+                dockerHost: tcp://khadas.strategicmate.company:4243
+                image: registry.strategicmate.company/test/ubuntu20.04-arm64
+                args: '-u root'
+#      publish:
+#        ordinal_number: 8
+#        file_id: strategicmate-5-ubuntu20_arm64
+#        package_id: 7057
+    ubuntu-2004-armv7-deb:
+      agent:
+        docker:
+          label: khadas
+          dockerHost: tcp://khadas.strategicmate.company:4243
+          image: registry.strategicmate.company/builder/ubuntu20.04-armv7
+      modules: *modules_debian10
+#      publish:
+#        ordinal_number: 8
+#        file_id: strategicmate-5-ubuntu20_arm32
+#        package_id: 7058
+  - ubuntu-2004-armv7-deb-docker:
+      agent:
+        docker:
+          label: khadas
+          dockerHost: tcp://khadas.strategicmate.company:4243
+          image: registry.strategicmate.company/builder/ubuntu20.04-armv7
+#      publish:
+#        ordinal_number: 10
+#        file_id: strategicmate-5-docker_armv7
+#        package_id: 7059
+
+
+
+
+
+
+
